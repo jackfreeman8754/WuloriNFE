@@ -5,7 +5,6 @@ name: Deploy DEV WEB
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
-  workflow_dispatch:
   push:
     branches:
       - next
@@ -38,7 +37,6 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
       - name: Setup kernel for react native, increase watchers
         run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
       - uses: actions/setup-node@v2
@@ -59,7 +57,6 @@ jobs:
           run_install: true
 
       - name: Build
-        run: CI='' pnpm build:web
 
       - name: Create env file
         working-directory: apps/web
@@ -125,7 +122,6 @@ jobs:
           echo $GH_PASSWORD | docker login ghcr.io -u $GH_ACTOR --password-stdin
           depot build --push \
             -t ghcr.io/$REGISTRY_OWNER/$DOCKER_NAME:$IMAGE_TAG \
-            -t ghcr.io/$REGISTRY_OWNER/$DOCKER_NAME:dev \
             -f apps/web/Dockerfile .
           echo "::set-output name=IMAGE::ghcr.io/$REGISTRY_OWNER/$DOCKER_NAME:$IMAGE_TAG"
 
